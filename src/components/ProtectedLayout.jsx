@@ -1,11 +1,12 @@
 import React from 'react';
 import Nav from './Nav';
+import '../App.css';
 
 const ProtectedLayout = ({ children }) => {
   return (
     <div>
       <Nav />
-      <main>
+      <main className='container'>
         {children}
       </main>
     </div>

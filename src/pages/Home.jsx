@@ -13,7 +13,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   // Defina a URL base do axios
-  axios.defaults.baseURL = 'https://peoplemanager.nexustech.net.br/chamados_auth';
+  axios.defaults.baseURL = `${import.meta.env.VITE_URL}/auth`;
   axios.defaults.headers.post['Content-Type'] = 'application/json';
 
   const handleLogin = async () => {
@@ -34,10 +34,10 @@ const Home = () => {
   const handleRegister = async () => {
     try {
       const response = await axios.post('/register.php', { name, email, password });
-      if(response.data.success){
+      if (response.data.success) {
         message.success(response.data.message);
         setIsLogin(true);
-      }else{
+      } else {
         message.error(response.data.message);
       }
     } catch (error) {

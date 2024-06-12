@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserInfo = async (token) => {
     try {
-      const response = await axios.post('https://peoplemanager.nexustech.net.br/chamados_auth/user-info.php', {}, {
+      const response = await axios.post(`${import.meta.env.VITE_URL}/auth/user-info.php`, {}, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
