@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input, message, Card } from 'antd';
+import { Button, Input, InputGroup, InputRightElement, useToast, Box, Text } from '@chakra-ui/react';
 import { useAuth } from '../auth';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,6 +11,7 @@ const Home = () => {
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
 
   // Defina a URL base do axios
   axios.defaults.baseURL = `${import.meta.env.VITE_URL}/auth`;
@@ -23,11 +24,23 @@ const Home = () => {
         await login(response.data.token);
         navigate('/page1');
       } else {
-        message.error(response.data.message || 'Invalid credentials');
+        toast({
+          title: 'Error',
+          description: response.data.message || 'Invalid credentials',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
       }
     } catch (error) {
       console.error('Error:', error.response || error.message);
-      message.error(error.response?.data?.message || 'Invalid credentials');
+      toast({
+        title: 'Error',
+        description: error.response?.data?.message || 'Invalid credentials',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
@@ -35,43 +48,77 @@ const Home = () => {
     try {
       const response = await axios.post('/register.php', { name, email, password });
       if (response.data.success) {
-        message.success(response.data.message);
+        toast({
+          title: 'Success',
+          description: response.data.message,
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
         setIsLogin(true);
       } else {
-        message.error(response.data.message);
+        toast({
+          title: 'Error',
+          description: response.data.message,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
       }
     } catch (error) {
-      message.error(error.response?.data?.message || 'Registration failed');
+      toast({
+        title: 'Error',
+        description: error.response?.data?.message || 'Registration failed',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <Card style={{ width: 400 }}>
+    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box width={400} p={4} borderWidth={1} borderRadius="md" boxShadow="lg">
         {isLogin ? (
           <>
-            <h1>Login Page</h1>
-            <Input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Input.Password placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <Button type="primary" onClick={handleLogin} style={{ marginTop: 16 }}>Login</Button>
-            <p style={{ marginTop: 16 }}>
-              Ainda não tem uma conta? <a onClick={() => setIsLogin(false)}>Registrar-se</a>
-            </p>
+            <Text fontSize="2xl" mb={4}>Login Page</Text>
+            <Input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} mb={2} />
+            <InputGroup size="md" mb={4}>
+              <Input
+                pr="4.5rem"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </InputGroup>
+            <Button colorScheme="teal" onClick={handleLogin} width="full">Login</Button>
+            <Text mt={4}>
+              Ainda não tem uma conta? <Button variant="link" colorScheme="teal" onClick={() => setIsLogin(false)}>Registrar-se</Button>
+            </Text>
           </>
         ) : (
           <>
-            <h1>Register Page</h1>
-            <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-            <Input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Input.Password placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <Button type="primary" onClick={handleRegister} style={{ marginTop: 16 }}>Register</Button>
-            <p style={{ marginTop: 16 }}>
-              Já tem uma conta? <a onClick={() => setIsLogin(true)}>Login</a>
-            </p>
+            <Text fontSize="2xl" mb={4}>Register Page</Text>
+            <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} mb={2} />
+            <Input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} mb={2} />
+            <InputGroup size="md" mb={4}>
+              <Input
+                pr="4.5rem"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </InputGroup>
+            <Button colorScheme="teal" onClick={handleRegister} width="full">Register</Button>
+            <Text mt={4}>
+              Já tem uma conta? <Button variant="link" colorScheme="teal" onClick={() => setIsLogin(true)}>Login</Button>
+            </Text>
           </>
         )}
-      </Card>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth';
-import { Button, Drawer, Typography, Divider } from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
+import {
+    Button,
+    Drawer,
+    DrawerBody,
+    DrawerHeader,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
+    Box,
+    Text,
+    Divider,
+    IconButton
+} from '@chakra-ui/react';
+import { HamburgerIcon } from '@chakra-ui/icons';
 import './Nav.css';
 
 const Nav = () => {
@@ -17,8 +29,6 @@ const Nav = () => {
         setVisible(false);
     };
 
-
-
     return (
         <div className="nav-container">
             <nav className="nav-layout-desktop">
@@ -26,7 +36,7 @@ const Nav = () => {
                     LOGO
                 </div>
                 <div className='nav-layout-desktop-message'>
-                    <Typography.Text style={{ marginRight: 16 }}>Olá {user.info.name}, seja bem vindo ao sistema de chamados</Typography.Text>
+                    <Text mr={4}>Olá {user.info.name}, seja bem vindo ao sistema de chamados</Text>
                 </div>
 
                 <div className='nav-layout-desktop-menu'>
@@ -38,20 +48,30 @@ const Nav = () => {
                 </div>
             </nav>
             <nav className="mobile-nav">
-                <Button type="primary" icon={<MenuOutlined />} onClick={showDrawer} />
-                <Drawer title="Menu" placement="right" closable={true} onClose={onClose} open={visible}>
-                    <div className='nav-layout-mobile-menu'>
-                        <Typography.Text style={{ marginBottom: 16 }}>Olá {user.info.name}, seja bem vindo ao sistema de chamados</Typography.Text>
-                        <Divider />
-                        <Link to="/page1" onClick={onClose}>Chamados</Link>
-                        <Divider />
-                        <Link to="/page2" onClick={onClose}>Abertura de Chamado</Link>
-                        <Divider />
-                        <Button onClick={() => { logout(); onClose(); }}>
-                            Logout
-                        </Button>
-                    </div>
-
+                <IconButton
+                    icon={<HamburgerIcon />}
+                    onClick={showDrawer}
+                    aria-label="Open menu"
+                />
+                <Drawer isOpen={visible} placement="right" onClose={onClose}>
+                    <DrawerOverlay />
+                    <DrawerContent>
+                        <DrawerCloseButton />
+                        <DrawerHeader>Menu</DrawerHeader>
+                        <DrawerBody>
+                            <Box className='nav-layout-mobile-menu'>
+                                <Text mb={4}>Olá {user.info.name}, seja bem vindo ao sistema de chamados</Text>
+                                <Divider />
+                                <Link to="/page1" onClick={onClose}>Chamados</Link>
+                                <Divider />
+                                <Link to="/page2" onClick={onClose}>Abertura de Chamado</Link>
+                                <Divider />
+                                <Button onClick={() => { logout(); onClose(); }}>
+                                    Logout
+                                </Button>
+                            </Box>
+                        </DrawerBody>
+                    </DrawerContent>
                 </Drawer>
             </nav>
         </div>
