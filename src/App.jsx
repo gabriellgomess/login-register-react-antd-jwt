@@ -7,7 +7,9 @@ import Page1 from './pages/Chamados';
 import Page2 from './pages/AberturaChamado';
 import ProtectedLayout from './components/ProtectedLayout';
 import { ChakraProvider } from '@chakra-ui/react';
-import theme from './theme'; // Importe o tema personalizado
+import './fonts.css';
+import theme from './theme';
+
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();

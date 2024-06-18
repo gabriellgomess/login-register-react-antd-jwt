@@ -1,13 +1,14 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { message } from 'antd';
+import { useToast } from '@chakra-ui/react';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const toast = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -40,7 +41,14 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', token);
     } catch (e) {
       console.error('Login error:', e);
-      message.error('Invalid token or failed to fetch user info');
+      toast({
+        title: 'Falha no login',
+        description: 'Token inválido ou expirado. Por favor, faça login novamente.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      });
+      
     }
   };
 

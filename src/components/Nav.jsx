@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import './Nav.css';
+import LogoHorizontal from '../assets/logo/logo_horizontal.png';
 
 const Nav = () => {
     const { logout, user } = useAuth();
@@ -33,10 +34,13 @@ const Nav = () => {
         <div className="nav-container">
             <nav className="nav-layout-desktop">
                 <div className='nav-layout-desktop-logo'>
-                    LOGO
+                    <img width={250} src={LogoHorizontal} alt="Logo" />
                 </div>
                 <div className='nav-layout-desktop-message'>
-                    <Text mr={4}>Olá {user.info.name}, seja bem vindo ao sistema de chamados</Text>
+                    <Text mr={4} display={{ base: 'none', md: 'none', lg: 'block' }}>
+                        Olá {user.info.name}, seja bem-vindo ao sistema de chamados
+                    </Text>
+
                 </div>
 
                 <div className='nav-layout-desktop-menu'>
