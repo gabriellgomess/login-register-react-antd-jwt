@@ -12,11 +12,20 @@ import {
     Box,
     Text,
     Divider,
-    IconButton
+    IconButton,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuGroup,
+    MenuItem,
+    MenuDivider,
 } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import './Nav.css';
 import LogoHorizontal from '../assets/logo/logo_horizontal.png';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGears, faArrowRightFromBracket, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+
 
 const Nav = () => {
     const { logout, user } = useAuth();
@@ -30,6 +39,11 @@ const Nav = () => {
         setVisible(false);
     };
 
+    const pages = [
+        { path: "/chamados", label: "Chamados" },
+        { path: "/abertura-chamado", label: "Abertura de Chamado" },
+    ];
+
     return (
         <div className="nav-container">
             <nav className="nav-layout-desktop">
@@ -40,15 +54,37 @@ const Nav = () => {
                     <Text mr={4} display={{ base: 'none', md: 'none', lg: 'block' }}>
                         Olá {user.info.name}, seja bem-vindo ao sistema de chamados
                     </Text>
-
                 </div>
-
                 <div className='nav-layout-desktop-menu'>
-                    <Link to="/page1">Chamados</Link>
-                    <Link to="/page2">Abertura de Chamado</Link>
-                    <Button onClick={logout}>
-                        Logout
-                    </Button>
+                    {pages.map((page, index) => (
+                        <Link key={index} to={page.path}>{page.label} </Link>
+                    ))}
+                    <Menu>
+                        <MenuButton as={Button}>
+                            Gestão <FontAwesomeIcon icon={faEllipsisVertical} />
+                        </MenuButton>
+                        <MenuList>
+                            <Text fontSize='sm' p={2}>{user.info.name}</Text>
+                            <MenuGroup title='Perfil'>
+                                <MenuItem>Meus dados</MenuItem>
+                            </MenuGroup>
+                            <MenuDivider />
+                            <MenuGroup title='Ajustes'>
+                                <Link to='/configuracoes'>
+                                    <MenuItem>Configurações</MenuItem>
+                                </Link>
+                            </MenuGroup>
+                            <MenuDivider />
+                            <MenuGroup title='Ajuda'>
+                                <MenuItem>Docs</MenuItem>
+                                <MenuItem>FAQ</MenuItem>
+                            </MenuGroup>
+                            <MenuDivider />
+                            <MenuItem onClick={() => { logout(); }}>
+                                <Text fontSize='sm'>Logout <FontAwesomeIcon icon={faArrowRightFromBracket} /></Text>
+                            </MenuItem>
+                        </MenuList>
+                    </Menu>
                 </div>
             </nav>
             <nav className="mobile-nav">
@@ -66,10 +102,12 @@ const Nav = () => {
                             <Box className='nav-layout-mobile-menu'>
                                 <Text mb={4}>Olá {user.info.name}, seja bem vindo ao sistema de chamados</Text>
                                 <Divider />
-                                <Link to="/page1" onClick={onClose}>Chamados</Link>
-                                <Divider />
-                                <Link to="/page2" onClick={onClose}>Abertura de Chamado</Link>
-                                <Divider />
+                                {pages.map((page, index) => (
+                                    <React.Fragment key={index}>
+                                        <Link to={page.path} onClick={onClose}>{page.label}</Link>
+                                        <Divider />
+                                    </React.Fragment>
+                                ))}
                                 <Button onClick={() => { logout(); onClose(); }}>
                                     Logout
                                 </Button>

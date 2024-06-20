@@ -23,7 +23,7 @@ const Home = () => {
       const response = await axios.post('/login.php', { email, password });
       if (response.data.token) {
         await login(response.data.token);
-        navigate('/page1');
+        navigate('/chamados');
       } else {
         toast({
           title: 'Erro',

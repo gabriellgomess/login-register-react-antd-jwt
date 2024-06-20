@@ -3,8 +3,9 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './auth';
 import Home from './pages/Home';
-import Page1 from './pages/Chamados';
-import Page2 from './pages/AberturaChamado';
+import Chamados from './pages/Chamados';
+import AberturaChamado from './pages/AberturaChamado';
+import Configuracoes from './pages/Configuracoes';
 import ProtectedLayout from './components/ProtectedLayout';
 import { ChakraProvider } from '@chakra-ui/react';
 import './fonts.css';
@@ -21,8 +22,9 @@ const App = () => (
     <AuthProvider>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/page1" element={<ProtectedRoute><Page1 /></ProtectedRoute>} />
-        <Route path="/page2" element={<ProtectedRoute><Page2 /></ProtectedRoute>} />
+        <Route path="/chamados" element={<ProtectedRoute><Chamados /></ProtectedRoute>} />
+        <Route path="/abertura-chamado" element={<ProtectedRoute><AberturaChamado /></ProtectedRoute>} />
+        <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
       </Routes>
     </AuthProvider>
   </ChakraProvider>
