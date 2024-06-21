@@ -4,12 +4,21 @@ import { extendTheme } from '@chakra-ui/react'
 import './index.css'
 
 const theme = extendTheme({
+  // define background color
+  styles: {
+    global: {
+      body: {
+        bg: '#fffefb',
+        color: '#3b3c3d',
+      },
+    },
+  },
   colors: {
     black: "#16161D",
   },
   fonts: {
     body: "Nunito", // fonte do corpo do texto
-    heading: "Georgia, serif", // fonte dos títulos
+    heading: "Nunito", // fonte dos títulos
     mono: "Menlo, monospace", // fonte monoespaçada
   },
   fontSizes: {

@@ -18,6 +18,7 @@ import {
 
 const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
   const [codigoSetor, setCodigoSetor] = useState('');
+  const [nomeSetor, setNomeSetor] = useState('');
   const [descricaoSetor, setDescricaoSetor] = useState('');
   const [centroDeCustoId, setCentroDeCustoId] = useState('');
   const [editIndexSetor, setEditIndexSetor] = useState(null);
@@ -26,11 +27,14 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
   const handleSubmitSetor = async (e) => {
     e.preventDefault();
 
-    const setor = { codigo: codigoSetor, descricao: descricaoSetor, centro_de_custo_id: centroDeCustoId };
+    const setor = { codigo: codigoSetor, descricao: descricaoSetor, centro_de_custo_id: centroDeCustoId, nome: nomeSetor };
 
     try {
       if (editIndexSetor !== null) {
-        await axios.put(`https://chamados.nexustech.net.br/api_chamados/update_setor.php?id=${setores[editIndexSetor].id}`, setor);
+        await axios.put(`https://chamados.nexustech.net.br/api_chamados/setores/update.php`, {
+          id: setores[editIndexSetor].id,
+          ...setor
+        });
         toast({
           title: 'Setor atualizado.',
           status: 'success',
@@ -38,8 +42,7 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
           isClosable: true,
         });
       } else {
-        const response = await axios.post('https://chamados.nexustech.net.br/api_chamados/post_setor.php', setor);
-        fetchSetores();
+        await axios.post('https://chamados.nexustech.net.br/api_chamados/setores/create.php', setor);
         toast({
           title: 'Setor adicionado.',
           status: 'success',
@@ -53,6 +56,7 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
     }
 
     setCodigoSetor('');
+    setNomeSetor('');
     setDescricaoSetor('');
     setCentroDeCustoId('');
     setEditIndexSetor(null);
@@ -60,6 +64,7 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
 
   const handleEditSetor = (index) => {
     setEditIndexSetor(index);
+    setNomeSetor(setores[index].nome);
     setCodigoSetor(setores[index].codigo);
     setDescricaoSetor(setores[index].descricao);
     setCentroDeCustoId(setores[index].centro_de_custo_id);
@@ -74,6 +79,14 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
             value={codigoSetor}
             onChange={(e) => setCodigoSetor(e.target.value)}
             placeholder="Código do Setor"
+          />
+        </FormControl>
+        <FormControl id="nomeSetor" isRequired mt={4}>
+          <FormLabel>Nome do Setor</FormLabel>
+          <Input
+            value={nomeSetor}
+            onChange={(e) => setNomeSetor(e.target.value)}
+            placeholder='Nome do Setor'
           />
         </FormControl>
 
@@ -95,20 +108,39 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
           >
             {centrosDeCusto.map((centro) => (
               <option key={centro.id} value={centro.id}>
-                {centro.descricao}
+                {centro.nome}
               </option>
             ))}
           </Select>
         </FormControl>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          <Button type="submit" colorScheme="teal" mt={4}>
+            {editIndexSetor !== null ? 'Editar Setor' : 'Adicionar Setor'}
+          </Button>
+          {editIndexSetor !== null && (
+            <Button
+              type="button"
+              colorScheme="red"
+              variant='outline'
+              mt={4}
+              onClick={() => {
+                setEditIndexSetor(null);
+                setCodigoSetor('');
+                setNomeSetor('');
+                setDescricaoSetor('');
+                setCentroDeCustoId('');
+              }}
+            >
+              Cancelar
+            </Button>)}
+        </div>
 
-        <Button type="submit" colorScheme="teal" mt={4}>
-          {editIndexSetor !== null ? 'Editar Setor' : 'Adicionar Setor'}
-        </Button>
       </form>
       <Table variant="simple" mt={8}>
         <Thead>
           <Tr>
             <Th>Código</Th>
+            <Th>Nome</Th>
             <Th>Descrição</Th>
             <Th>Centro de Custo</Th>
             <Th>Ações</Th>
@@ -118,6 +150,7 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
           {setores.map((setor, index) => (
             <Tr key={index}>
               <Td>{setor.codigo}</Td>
+              <Td>{setor.nome}</Td>
               <Td>{setor.descricao}</Td>
               <Td>{centrosDeCusto.find(centro => centro.id === setor.centro_de_custo_id)?.descricao || ''}</Td>
               <Td>

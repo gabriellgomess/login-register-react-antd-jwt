@@ -15,17 +15,17 @@ import AtendenteForm from './AtendenteForm';
 const FormConfiguracoes = () => {
   const [centrosDeCusto, setCentrosDeCusto] = useState([]);
   const [setores, setSetores] = useState([]);
-  const [atendente, setAtendente] = useState([]);
+  const [atendentes, setAtendentes] = useState([]);
 
   useEffect(() => {
     fetchCentrosDeCusto();
     fetchSetores();
-    fetchAtendente();
+    fetchAtendentes();
   }, []);
 
   const fetchCentrosDeCusto = async () => {
     try {
-      const response = await axios.get('https://chamados.nexustech.net.br/api_chamados/get_centros_de_custo.php');
+      const response = await axios.get('https://chamados.nexustech.net.br/api_chamados/centros_de_custo/read.php');
       setCentrosDeCusto(response.data);
     } catch (error) {
       console.error('Erro ao buscar centros de custo', error);
@@ -34,21 +34,21 @@ const FormConfiguracoes = () => {
 
   const fetchSetores = async () => {
     try {
-      const response = await axios.get('https://chamados.nexustech.net.br/api_chamados/get_setores.php');
+      const response = await axios.get('https://chamados.nexustech.net.br/api_chamados/setores/read.php');
       setSetores(response.data);
     } catch (error) {
       console.error('Erro ao buscar setores', error);
     }
   };
 
-  const fetchAtendente = async () => {
+  const fetchAtendentes = async () => {
     try {
-      const response = await axios.get('https://chamados.nexustech.net.br/api_chamados/get_atendentes.php');
-      setAtendente(response.data);
+      const response = await axios.get('https://chamados.nexustech.net.br/api_chamados/atendentes/read.php');
+      setAtendentes(response.data);
     } catch (error) {
       console.error('Erro ao buscar atendentes', error);
     }
-  }
+  };
 
   return (
     <Box p={4}>
@@ -76,8 +76,8 @@ const FormConfiguracoes = () => {
             <AtendenteForm
               centrosDeCusto={centrosDeCusto}
               setores={setores}
-              atendente={atendente}
-              fetchAtendente={fetchAtendente}
+              atendentes={atendentes}
+              fetchAtendentes={fetchAtendentes}
             />
           </TabPanel>
         </TabPanels>

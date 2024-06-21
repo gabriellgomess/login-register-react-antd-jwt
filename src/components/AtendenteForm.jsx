@@ -16,22 +16,24 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-const AtendenteForm = ({ centrosDeCusto, setores, atendente, fetchAtendente }) => {
+const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes }) => {
   const [nomeAtendente, setNomeAtendente] = useState('');
   const [emailAtendente, setEmailAtendente] = useState('');
-  const [centroDeCustoId, setCentroDeCustoId] = useState('');
-  const [setorId, setSetorId] = useState('');
+  const [telefoneAtendente, setTelefoneAtendente] = useState('');
   const [editIndexAtendente, setEditIndexAtendente] = useState(null);
   const toast = useToast();
 
   const handleSubmitAtendente = async (e) => {
     e.preventDefault();
 
-    const novoAtendente = { nome: nomeAtendente, email: emailAtendente, centro_de_custo_id: centroDeCustoId, setor_id: setorId };
+    const novoAtendente = { nome: nomeAtendente, email: emailAtendente, telefone: telefoneAtendente };
 
     try {
       if (editIndexAtendente !== null) {
-        await axios.put(`https://chamados.nexustech.net.br/api_chamados/update_atendente.php?id=${atendente[editIndexAtendente].id}`, novoAtendente);
+        await axios.put(`https://chamados.nexustech.net.br/api_chamados/atendentes/update.php`, {
+          id: atendentes[editIndexAtendente].id,
+          ...novoAtendente
+        });
         toast({
           title: 'Atendente atualizado.',
           status: 'success',
@@ -39,8 +41,7 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendente, fetchAtendente }) =
           isClosable: true,
         });
       } else {
-        const response = await axios.post('https://chamados.nexustech.net.br/api_chamados/post_atendente.php', novoAtendente);
-        fetchAtendente();
+        await axios.post('https://chamados.nexustech.net.br/api_chamados/atendentes/create.php', novoAtendente);
         toast({
           title: 'Atendente adicionado.',
           status: 'success',
@@ -48,24 +49,22 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendente, fetchAtendente }) =
           isClosable: true,
         });
       }
-      fetchAtendente();
+      fetchAtendentes();
     } catch (error) {
       console.error('Erro ao salvar atendente', error);
     }
 
     setNomeAtendente('');
     setEmailAtendente('');
-    setCentroDeCustoId('');
-    setSetorId('');
+    setTelefoneAtendente('');
     setEditIndexAtendente(null);
   };
 
   const handleEditAtendente = (index) => {
     setEditIndexAtendente(index);
-    setNomeAtendente(atendente[index].nome);
-    setEmailAtendente(atendente[index].email);
-    setCentroDeCustoId(atendente[index].centro_de_custo_id);
-    setSetorId(atendente[index].setor_id);
+    setNomeAtendente(atendentes[index].nome);
+    setEmailAtendente(atendentes[index].email);
+    setTelefoneAtendente(atendentes[index].telefone);
   };
 
   return (
@@ -89,57 +88,50 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendente, fetchAtendente }) =
           />
         </FormControl>
 
-        <FormControl id="centroDeCustoId" isRequired mt={4}>
-          <FormLabel>Centro de Custo</FormLabel>
-          <Select
-            placeholder="Selecione o Centro de Custo"
-            value={centroDeCustoId}
-            onChange={(e) => setCentroDeCustoId(e.target.value)}
-          >
-            {centrosDeCusto.map((centro) => (
-              <option key={centro.id} value={centro.id}>
-                {centro.descricao}
-              </option>
-            ))}
-          </Select>
+        <FormControl id="telefoneAtendente" isRequired mt={4}>
+          <FormLabel>Telefone do Atendente</FormLabel>
+          <Input
+            value={telefoneAtendente}
+            onChange={(e) => setTelefoneAtendente(e.target.value)}
+            placeholder="Telefone do Atendente"
+          />
         </FormControl>
-
-        <FormControl id="setorId" isRequired mt={4}>
-          <FormLabel>Setor</FormLabel>
-          <Select
-            placeholder="Selecione o Setor"
-            value={setorId}
-            onChange={(e) => setSetorId(e.target.value)}
-          >
-            {setores.map((setor) => (
-              <option key={setor.id} value={setor.id}>
-                {setor.descricao}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-
-        <Button type="submit" colorScheme="teal" mt={4}>
-          {editIndexAtendente !== null ? 'Editar Atendente' : 'Adicionar Atendente'}
-        </Button>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          <Button type="submit" colorScheme="teal" mt={4}>
+            {editIndexAtendente !== null ? 'Editar Atendente' : 'Adicionar Atendente'}
+          </Button>
+          {editIndexAtendente !== null && (
+            <Button
+              type="button"
+              colorScheme="red"
+              variant='outline'
+              mt={4}
+              onClick={() => {
+                setEditIndexAtendente(null);
+                setNomeAtendente('');
+                setEmailAtendente('');
+                setTelefoneAtendente('');
+              }}
+            >
+              Cancelar
+            </Button>)}
+        </div>
       </form>
       <Table variant="simple" mt={8}>
         <Thead>
           <Tr>
             <Th>Nome</Th>
             <Th>Email</Th>
-            <Th>Centro de Custo</Th>
-            <Th>Setor</Th>
+            <Th>Telefone</Th>
             <Th>Ações</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {atendente.map((at, index) => (
+          {atendentes.map((at, index) => (
             <Tr key={index}>
               <Td>{at.nome}</Td>
               <Td>{at.email}</Td>
-              <Td>{centrosDeCusto.find(centro => centro.id === at.centro_de_custo_id)?.descricao || ''}</Td>
-              <Td>{setores.find(setor => setor.id === at.setor_id)?.descricao || ''}</Td>
+              <Td>{at.telefone}</Td>
               <Td>
                 <Button size="sm" onClick={() => handleEditAtendente(index)}>Editar</Button>
               </Td>

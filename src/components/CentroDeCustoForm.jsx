@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import {
   Box,
@@ -13,10 +13,15 @@ import {
   Th,
   Td,
   useToast,
+  useBreakpointValue,
+  VStack,
+  HStack,
+  Text,
 } from '@chakra-ui/react';
 
 const CentroDeCustoForm = ({ centrosDeCusto, fetchCentrosDeCusto }) => {
   const [codigoCentroDeCusto, setCodigoCentroDeCusto] = useState('');
+  const [nomeCentroDeCusto, setNomeCentroDeCusto] = useState('');
   const [descricaoCentroDeCusto, setDescricaoCentroDeCusto] = useState('');
   const [editIndexCentro, setEditIndexCentro] = useState(null);
   const toast = useToast();
@@ -24,11 +29,14 @@ const CentroDeCustoForm = ({ centrosDeCusto, fetchCentrosDeCusto }) => {
   const handleSubmitCentroDeCusto = async (e) => {
     e.preventDefault();
 
-    const centroDeCusto = { codigo: codigoCentroDeCusto, descricao: descricaoCentroDeCusto };
+    const centroDeCusto = { codigo: codigoCentroDeCusto, descricao: descricaoCentroDeCusto, nome: nomeCentroDeCusto };
 
     try {
       if (editIndexCentro !== null) {
-        await axios.put(`https://chamados.nexustech.net.br/api_chamados/update_centro_de_custo.php?id=${centrosDeCusto[editIndexCentro].id}`, centroDeCusto);
+        await axios.put(`https://chamados.nexustech.net.br/api_chamados/centros_de_custo/update.php`, {
+          id: centrosDeCusto[editIndexCentro].id,
+          ...centroDeCusto
+        });
         toast({
           title: 'Centro de custo atualizado.',
           status: 'success',
@@ -36,7 +44,7 @@ const CentroDeCustoForm = ({ centrosDeCusto, fetchCentrosDeCusto }) => {
           isClosable: true,
         });
       } else {
-        const response = await axios.post('https://chamados.nexustech.net.br/api_chamados/post_centro_de_custo.php', centroDeCusto);
+        await axios.post('https://chamados.nexustech.net.br/api_chamados/centros_de_custo/create.php', centroDeCusto);
         fetchCentrosDeCusto();
         toast({
           title: 'Centro de custo adicionado.',
@@ -51,15 +59,19 @@ const CentroDeCustoForm = ({ centrosDeCusto, fetchCentrosDeCusto }) => {
     }
 
     setCodigoCentroDeCusto('');
+    setNomeCentroDeCusto('');
     setDescricaoCentroDeCusto('');
     setEditIndexCentro(null);
   };
 
   const handleEditCentroDeCusto = (index) => {
     setEditIndexCentro(index);
+    setNomeCentroDeCusto(centrosDeCusto[index].nome);
     setCodigoCentroDeCusto(centrosDeCusto[index].codigo);
     setDescricaoCentroDeCusto(centrosDeCusto[index].descricao);
   };
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   return (
     <Box>
@@ -72,6 +84,14 @@ const CentroDeCustoForm = ({ centrosDeCusto, fetchCentrosDeCusto }) => {
             placeholder="Código do Centro de Custo"
           />
         </FormControl>
+        <FormControl id="nomeCentroDeCusto" isRequired mt={4}>
+          <FormLabel>Nome do Centro de Custo</FormLabel>
+          <Input
+            value={nomeCentroDeCusto}
+            onChange={(e) => setNomeCentroDeCusto(e.target.value)}
+            placeholder="Nome do Centro de Custo"
+          />
+        </FormControl>
 
         <FormControl id="descricaoCentroDeCusto" isRequired mt={4}>
           <FormLabel>Descrição do Centro de Custo</FormLabel>
@@ -81,31 +101,72 @@ const CentroDeCustoForm = ({ centrosDeCusto, fetchCentrosDeCusto }) => {
             placeholder="Descrição do Centro de Custo"
           />
         </FormControl>
+        <div style={{ display: 'flex', gap: '20px' }}>
+          <Button type="submit" colorScheme="teal" mt={4}>
+            {editIndexCentro !== null ? 'Editar Centro de Custo' : 'Adicionar Centro de Custo'}
+          </Button>
+          {editIndexCentro !== null && (
+            <Button
+              type="button"
+              colorScheme="red"
+              variant='outline'
+              mt={4}
+              onClick={() => {
+                setEditIndexCentro(null);
+                setNomeCentroDeCusto('');
+                setCodigoCentroDeCusto('');
+                setDescricaoCentroDeCusto('');
+              }}
+            >
+              Cancelar
+            </Button>)}
+        </div>
 
-        <Button type="submit" colorScheme="teal" mt={4}>
-          {editIndexCentro !== null ? 'Editar Centro de Custo' : 'Adicionar Centro de Custo'}
-        </Button>
       </form>
-      <Table variant="simple" mt={8}>
-        <Thead>
-          <Tr>
-            <Th>Código</Th>
-            <Th>Descrição</Th>
-            <Th>Ações</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+      {isMobile ? (
+        <VStack mt={8} spacing={4} align="stretch">
           {centrosDeCusto.map((centro, index) => (
-            <Tr key={index}>
-              <Td>{centro.codigo}</Td>
-              <Td>{centro.descricao}</Td>
-              <Td>
-                <Button size="sm" onClick={() => handleEditCentroDeCusto(index)}>Editar</Button>
-              </Td>
-            </Tr>
+            <Box key={index} p={4} borderWidth="1px" borderRadius="lg">
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Código:</Text>
+                <Text>{centro.codigo}</Text>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Nome:</Text>
+                <Text>{centro.nome}</Text>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Descrição:</Text>
+                <Text>{centro.descricao}</Text>
+              </HStack>
+              <Button size="sm" onClick={() => handleEditCentroDeCusto(index)} mt={2}>Editar</Button>
+            </Box>
           ))}
-        </Tbody>
-      </Table>
+        </VStack>
+      ) : (
+        <Table variant="simple" mt={8}>
+          <Thead>
+            <Tr>
+              <Th>Código</Th>
+              <Th>Nome</Th>
+              <Th>Descrição</Th>
+              <Th>Ações</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {centrosDeCusto.map((centro, index) => (
+              <Tr key={index}>
+                <Td>{centro.codigo}</Td>
+                <Td>{centro.nome}</Td>
+                <Td>{centro.descricao}</Td>
+                <Td>
+                  <Button size="sm" onClick={() => handleEditCentroDeCusto(index)}>Editar</Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
     </Box>
   );
 };

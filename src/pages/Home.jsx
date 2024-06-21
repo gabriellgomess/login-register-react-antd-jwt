@@ -7,9 +7,10 @@ import Logo from '../assets/logo/logo_vertical.png';
 
 const Home = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [name, setName] = useState('');
+  const [nome, setNome] = useState('');
+  const [tipo, setTipo] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [senha, setSenha] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
@@ -20,7 +21,7 @@ const Home = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('/login.php', { email, password });
+      const response = await axios.post('/login.php', { email, senha });
       if (response.data.token) {
         await login(response.data.token);
         navigate('/chamados');
@@ -47,7 +48,7 @@ const Home = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post('/register.php', { name, email, password });
+      const response = await axios.post('/register.php', { nome, email, senha, tipo });
       if (response.data.success) {
         toast({
           title: 'Parabéns',
@@ -90,9 +91,9 @@ const Home = () => {
               <Input
                 pr="4.5rem"
                 type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
               />
             </InputGroup>
             <Button colorScheme="teal" onClick={handleLogin} width="full">Login</Button>
@@ -103,15 +104,16 @@ const Home = () => {
         ) : (
           <>
             <Text fontSize="2xl" mb={4}>Registrar</Text>
-            <Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} mb={2} />
+            <Input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} mb={2} />
+            <Input placeholder="Tipo" value={tipo} onChange={(e) => setTipo(e.target.value)} mb={2} />
             <Input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} mb={2} />
             <InputGroup size="md" mb={4}>
               <Input
                 pr="4.5rem"
                 type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
               />
             </InputGroup>
             <Button colorScheme="teal" onClick={handleRegister} width="full">Register</Button>

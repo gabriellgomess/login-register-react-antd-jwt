@@ -52,7 +52,7 @@ const Nav = () => {
                 </div>
                 <div className='nav-layout-desktop-message'>
                     <Text mr={4} display={{ base: 'none', md: 'none', lg: 'block' }}>
-                        Olá {user.info.name}, seja bem-vindo ao sistema de chamados
+                        Olá {user.info.nome}, seja bem-vindo ao sistema de chamados
                     </Text>
                 </div>
                 <div className='nav-layout-desktop-menu'>
@@ -64,7 +64,7 @@ const Nav = () => {
                             Gestão <FontAwesomeIcon icon={faEllipsisVertical} />
                         </MenuButton>
                         <MenuList>
-                            <Text fontSize='sm' p={2}>{user.info.name}</Text>
+                            <Text fontSize='sm' p={2}>{user.info.nome}</Text>
                             <MenuGroup title='Perfil'>
                                 <MenuItem>Meus dados</MenuItem>
                             </MenuGroup>
@@ -100,7 +100,7 @@ const Nav = () => {
                         <DrawerHeader>Menu</DrawerHeader>
                         <DrawerBody>
                             <Box className='nav-layout-mobile-menu'>
-                                <Text mb={4}>Olá {user.info.name}, seja bem vindo ao sistema de chamados</Text>
+                                <Text mb={4}>Olá {user.info.nome}, seja bem vindo ao sistema de chamados</Text>
                                 <Divider />
                                 {pages.map((page, index) => (
                                     <React.Fragment key={index}>
