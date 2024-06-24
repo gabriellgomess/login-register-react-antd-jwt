@@ -14,6 +14,10 @@ import {
   Td,
   Select,
   useToast,
+  useBreakpointValue,
+  VStack,
+  HStack,
+  Text,
 } from '@chakra-ui/react';
 
 const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
@@ -69,6 +73,8 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
     setDescricaoSetor(setores[index].descricao);
     setCentroDeCustoId(setores[index].centro_de_custo_id);
   };
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   return (
     <Box>
@@ -136,30 +142,52 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
         </div>
 
       </form>
-      <Table variant="simple" mt={8}>
-        <Thead>
-          <Tr>
-            <Th>Código</Th>
-            <Th>Nome</Th>
-            <Th>Descrição</Th>
-            <Th>Centro de Custo</Th>
-            <Th>Ações</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+      {isMobile ? (
+        <VStack mt={8} spacing={4} align="stretch">
           {setores.map((setor, index) => (
-            <Tr key={index}>
-              <Td>{setor.codigo}</Td>
-              <Td>{setor.nome}</Td>
-              <Td>{setor.descricao}</Td>
-              <Td>{centrosDeCusto.find(centro => centro.id === setor.centro_de_custo_id)?.descricao || ''}</Td>
-              <Td>
-                <Button size="sm" onClick={() => handleEditSetor(index)}>Editar</Button>
-              </Td>
-            </Tr>
+            <Box key={index} p={4} borderWidth="1px" borderRadius="lg">
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Código:</Text>
+                <Text>{setor.codigo}</Text>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Nome:</Text>
+                <Text>{setor.nome}</Text>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Centro de Custo:</Text>
+                <Text>{centrosDeCusto.find(centro => centro.id === setor.centro_de_custo_id)?.nome || ''}</Text>
+              </HStack>
+              <Button size="sm" onClick={() => handleEditSetor(index)} mt={2}>Editar</Button>
+            </Box>
           ))}
-        </Tbody>
-      </Table>
+        </VStack>
+      ) : (
+        <Table variant="simple" mt={8}>
+          <Thead>
+            <Tr>
+              <Th>Código</Th>
+              <Th>Nome</Th>
+              <Th>Descrição</Th>
+              <Th>Centro de Custo</Th>
+              <Th>Ações</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {setores.map((setor, index) => (
+              <Tr key={index}>
+                <Td>{setor.codigo}</Td>
+                <Td>{setor.nome}</Td>
+                <Td>{setor.descricao}</Td>
+                <Td>{centrosDeCusto.find(centro => centro.id === setor.centro_de_custo_id)?.descricao || ''}</Td>
+                <Td>
+                  <Button size="sm" onClick={() => handleEditSetor(index)}>Editar</Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
     </Box>
   );
 };

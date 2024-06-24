@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Box,
@@ -14,19 +14,43 @@ import {
   Td,
   Select,
   useToast,
+  useBreakpointValue,
+  VStack,
+  HStack,
+  Text,
 } from '@chakra-ui/react';
 
 const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes }) => {
   const [nomeAtendente, setNomeAtendente] = useState('');
   const [emailAtendente, setEmailAtendente] = useState('');
   const [telefoneAtendente, setTelefoneAtendente] = useState('');
+  const [centroDeCustoId, setCentroDeCustoId] = useState('');
+  const [setorId, setSetorId] = useState('');
+  const [filteredSetores, setFilteredSetores] = useState(setores);
   const [editIndexAtendente, setEditIndexAtendente] = useState(null);
   const toast = useToast();
+
+  useEffect(() => {
+    if (centroDeCustoId) {
+      setFilteredSetores(setores.filter(setor => setor.centro_de_custo_id === parseInt(centroDeCustoId)));
+    } else {
+      setFilteredSetores(setores);
+    }
+  }, [centroDeCustoId, setores]);
+
+  useEffect(() => {
+    if (setorId) {
+      const setor = setores.find(setor => setor.id === parseInt(setorId));
+      if (setor) {
+        setCentroDeCustoId(setor.centro_de_custo_id);
+      }
+    }
+  }, [setorId, setores]);
 
   const handleSubmitAtendente = async (e) => {
     e.preventDefault();
 
-    const novoAtendente = { nome: nomeAtendente, email: emailAtendente, telefone: telefoneAtendente };
+    const novoAtendente = { nome: nomeAtendente, email: emailAtendente, telefone: telefoneAtendente, centro_de_custo_id: centroDeCustoId, setor_id: setorId };
 
     try {
       if (editIndexAtendente !== null) {
@@ -57,6 +81,8 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
     setNomeAtendente('');
     setEmailAtendente('');
     setTelefoneAtendente('');
+    setCentroDeCustoId('');
+    setSetorId('');
     setEditIndexAtendente(null);
   };
 
@@ -65,7 +91,11 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
     setNomeAtendente(atendentes[index].nome);
     setEmailAtendente(atendentes[index].email);
     setTelefoneAtendente(atendentes[index].telefone);
+    setCentroDeCustoId(atendentes[index].centro_de_custo_id);
+    setSetorId(atendentes[index].setor_id);
   };
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   return (
     <Box>
@@ -96,6 +126,37 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
             placeholder="Telefone do Atendente"
           />
         </FormControl>
+
+        <FormControl id="centroDeCustoId" isRequired mt={4}>
+          <FormLabel>Centro de Custo</FormLabel>
+          <Select
+            placeholder="Selecione o Centro de Custo"
+            value={centroDeCustoId}
+            onChange={(e) => setCentroDeCustoId(e.target.value)}
+          >
+            {centrosDeCusto.map((centro) => (
+              <option key={centro.id} value={centro.id}>
+                {centro.nome}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl id="setorId" isRequired mt={4}>
+          <FormLabel>Setor</FormLabel>
+          <Select
+            placeholder="Selecione o Setor"
+            value={setorId}
+            onChange={(e) => setSetorId(e.target.value)}
+          >
+            {filteredSetores.map((setor) => (
+              <option key={setor.id} value={setor.id}>
+                {setor.nome}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+
         <div style={{ display: 'flex', gap: '20px' }}>
           <Button type="submit" colorScheme="teal" mt={4}>
             {editIndexAtendente !== null ? 'Editar Atendente' : 'Adicionar Atendente'}
@@ -111,34 +172,70 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
                 setNomeAtendente('');
                 setEmailAtendente('');
                 setTelefoneAtendente('');
+                setCentroDeCustoId('');
+                setSetorId('');
               }}
             >
               Cancelar
             </Button>)}
         </div>
       </form>
-      <Table variant="simple" mt={8}>
-        <Thead>
-          <Tr>
-            <Th>Nome</Th>
-            <Th>Email</Th>
-            <Th>Telefone</Th>
-            <Th>Ações</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+      {isMobile ? (
+        <VStack mt={8} spacing={4} align="stretch">
           {atendentes.map((at, index) => (
-            <Tr key={index}>
-              <Td>{at.nome}</Td>
-              <Td>{at.email}</Td>
-              <Td>{at.telefone}</Td>
-              <Td>
-                <Button size="sm" onClick={() => handleEditAtendente(index)}>Editar</Button>
-              </Td>
-            </Tr>
+            <Box key={index} p={4} borderWidth="1px" borderRadius="lg">
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Nome:</Text>
+                <Text>{at.nome}</Text>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Email:</Text>
+                <Text>{at.email}</Text>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Telefone:</Text>
+                <Text>{at.telefone}</Text>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Centro de Custo:</Text>
+                <Text>{at.centro_de_custo_nome}</Text>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">Setor:</Text>
+                <Text>{at.setor_nome}</Text>
+              </HStack>
+              <Button size="sm" onClick={() => handleEditAtendente(index)} mt={2}>Editar</Button>
+            </Box>
           ))}
-        </Tbody>
-      </Table>
+        </VStack>
+      ) : (
+        <Table variant="simple" mt={8}>
+          <Thead>
+            <Tr>
+              <Th>Nome</Th>
+              <Th>Email</Th>
+              <Th>Telefone</Th>
+              <Th>Centro de Custo</Th>
+              <Th>Setor</Th>
+              <Th>Ações</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {atendentes.map((at, index) => (
+              <Tr key={index}>
+                <Td>{at.nome}</Td>
+                <Td>{at.email}</Td>
+                <Td>{at.telefone}</Td>
+                <Td>{at.centro_de_custo_nome}</Td>
+                <Td>{at.setor_nome}</Td>
+                <Td>
+                  <Button size="sm" onClick={() => handleEditAtendente(index)}>Editar</Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
     </Box>
   );
 };
