@@ -17,6 +17,7 @@ import {
   VStack,
   HStack,
   Text,
+  Flex
 } from '@chakra-ui/react';
 
 const CentroDeCustoForm = ({ centrosDeCusto, fetchCentrosDeCusto }) => {
@@ -76,22 +77,24 @@ const CentroDeCustoForm = ({ centrosDeCusto, fetchCentrosDeCusto }) => {
   return (
     <Box>
       <form onSubmit={handleSubmitCentroDeCusto}>
-        <FormControl id="codigoCentroDeCusto" isRequired>
-          <FormLabel>Código do Centro de Custo</FormLabel>
-          <Input
-            value={codigoCentroDeCusto}
-            onChange={(e) => setCodigoCentroDeCusto(e.target.value)}
-            placeholder="Código do Centro de Custo"
-          />
-        </FormControl>
-        <FormControl id="nomeCentroDeCusto" isRequired mt={4}>
-          <FormLabel>Nome do Centro de Custo</FormLabel>
-          <Input
-            value={nomeCentroDeCusto}
-            onChange={(e) => setNomeCentroDeCusto(e.target.value)}
-            placeholder="Nome do Centro de Custo"
-          />
-        </FormControl>
+        <Flex justifyContent="space-between" gap="20px" flexDirection={isMobile?"column":"row"}>
+          <FormControl id="codigoCentroDeCusto" isRequired width={isMobile?"100%":"20%"}>
+            <FormLabel>Código</FormLabel>
+            <Input
+              value={codigoCentroDeCusto}
+              onChange={(e) => setCodigoCentroDeCusto(e.target.value)}
+              placeholder="Código"
+            />
+          </FormControl>
+          <FormControl id="nomeCentroDeCusto" isRequired width={isMobile?"100%":"80%"}>
+            <FormLabel>Nome do Centro de Custo</FormLabel>
+            <Input
+              value={nomeCentroDeCusto}
+              onChange={(e) => setNomeCentroDeCusto(e.target.value)}
+              placeholder="Nome do Centro de Custo"
+            />
+          </FormControl>
+        </Flex>
 
         <FormControl id="descricaoCentroDeCusto" isRequired mt={4}>
           <FormLabel>Descrição do Centro de Custo</FormLabel>

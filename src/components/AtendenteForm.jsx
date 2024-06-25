@@ -18,14 +18,18 @@ import {
   VStack,
   HStack,
   Text,
+  Flex,
+  Switch,
 } from '@chakra-ui/react';
 
-const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes }) => {
+const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes, usuarios }) => {  
+  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
   const [nomeAtendente, setNomeAtendente] = useState('');
   const [emailAtendente, setEmailAtendente] = useState('');
   const [telefoneAtendente, setTelefoneAtendente] = useState('');
   const [centroDeCustoId, setCentroDeCustoId] = useState('');
   const [setorId, setSetorId] = useState('');
+  const [isGestor, setIsGestor] = useState(false);
   const [filteredSetores, setFilteredSetores] = useState(setores);
   const [editIndexAtendente, setEditIndexAtendente] = useState(null);
   const toast = useToast();
@@ -45,12 +49,28 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
         setCentroDeCustoId(setor.centro_de_custo_id);
       }
     }
-  }, [setorId, setores]);
+  }, [setorId, setores]);  
+
+  const handleUsuarioChange = (e) => {
+    const usuarioId = e.target.value;
+    const usuario = usuarios.find(u => u.id === parseInt(usuarioId));
+    if (usuario) {
+      setUsuarioSelecionado(usuario);
+      setNomeAtendente(usuario.nome);
+      setEmailAtendente(usuario.email);
+      setTelefoneAtendente(usuario.telefone || '');
+    } else {
+      setUsuarioSelecionado(null);
+      setNomeAtendente('');
+      setEmailAtendente('');
+      setTelefoneAtendente('');
+    }
+  };
 
   const handleSubmitAtendente = async (e) => {
     e.preventDefault();
 
-    const novoAtendente = { nome: nomeAtendente, email: emailAtendente, telefone: telefoneAtendente, centro_de_custo_id: centroDeCustoId, setor_id: setorId };
+    const novoAtendente = { nome: nomeAtendente, email: emailAtendente, telefone: telefoneAtendente, centro_de_custo_id: centroDeCustoId, setor_id: setorId, is_gestor: isGestor };
 
     try {
       if (editIndexAtendente !== null) {
@@ -78,11 +98,13 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
       console.error('Erro ao salvar atendente', error);
     }
 
+    setUsuarioSelecionado(null);
     setNomeAtendente('');
     setEmailAtendente('');
     setTelefoneAtendente('');
     setCentroDeCustoId('');
     setSetorId('');
+    setIsGestor(false);
     setEditIndexAtendente(null);
   };
 
@@ -93,6 +115,7 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
     setTelefoneAtendente(atendentes[index].telefone);
     setCentroDeCustoId(atendentes[index].centro_de_custo_id);
     setSetorId(atendentes[index].setor_id);
+    setIsGestor(atendentes[index].is_gestor);
   };
 
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -100,33 +123,41 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
   return (
     <Box>
       <form onSubmit={handleSubmitAtendente}>
-        <FormControl id="nomeAtendente" isRequired>
+        <FormControl id="usuarioAtendente" isRequired>
           <FormLabel>Nome do Atendente</FormLabel>
-          <Input
-            value={nomeAtendente}
-            onChange={(e) => setNomeAtendente(e.target.value)}
-            placeholder="Nome do Atendente"
-          />
+          <Select
+            placeholder="Selecione o Usuário"
+            value={usuarioSelecionado ? usuarioSelecionado.id : ''}
+            onChange={handleUsuarioChange}
+          >
+            {usuarios.map((usuario) => (
+              <option key={usuario.id} value={usuario.id}>
+                {usuario.nome}
+              </option>
+            ))}
+          </Select>
         </FormControl>
+        <Flex mt={4} justifyContent="space-between" gap="20px" flexDirection={isMobile ? "column" : "row"}>
+          <FormControl id="emailAtendente" isRequired width={isMobile ? "100%" : "50%"}>
+            <FormLabel>Email do Atendente</FormLabel>
+            <Input
+              value={emailAtendente}
+              onChange={(e) => setEmailAtendente(e.target.value)}
+              placeholder="Email do Atendente"
+              isReadOnly={usuarioSelecionado !== null}
+            />
+          </FormControl>
 
-        <FormControl id="emailAtendente" isRequired mt={4}>
-          <FormLabel>Email do Atendente</FormLabel>
-          <Input
-            value={emailAtendente}
-            onChange={(e) => setEmailAtendente(e.target.value)}
-            placeholder="Email do Atendente"
-          />
-        </FormControl>
-
-        <FormControl id="telefoneAtendente" isRequired mt={4}>
-          <FormLabel>Telefone do Atendente</FormLabel>
-          <Input
-            value={telefoneAtendente}
-            onChange={(e) => setTelefoneAtendente(e.target.value)}
-            placeholder="Telefone do Atendente"
-          />
-        </FormControl>
-
+          <FormControl id="telefoneAtendente" isRequired width={isMobile ? "100%" : "50%"}>
+            <FormLabel>Telefone do Atendente</FormLabel>
+            <Input
+              value={telefoneAtendente}
+              onChange={(e) => setTelefoneAtendente(e.target.value)}
+              placeholder="Telefone do Atendente"
+              isReadOnly={usuarioSelecionado !== null}
+            />
+          </FormControl>
+        </Flex>
         <FormControl id="centroDeCustoId" isRequired mt={4}>
           <FormLabel>Centro de Custo</FormLabel>
           <Select
@@ -157,6 +188,14 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
           </Select>
         </FormControl>
 
+        <FormControl id="isGestor" mt={4}>
+          <FormLabel>É Gestor?</FormLabel>
+          <Switch
+            isChecked={isGestor}
+            onChange={(e) => setIsGestor(e.target.checked)}
+          />
+        </FormControl>
+
         <div style={{ display: 'flex', gap: '20px' }}>
           <Button type="submit" colorScheme="teal" mt={4}>
             {editIndexAtendente !== null ? 'Editar Atendente' : 'Adicionar Atendente'}
@@ -168,12 +207,14 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
               variant='outline'
               mt={4}
               onClick={() => {
-                setEditIndexAtendente(null);
+                setUsuarioSelecionado(null);
                 setNomeAtendente('');
                 setEmailAtendente('');
                 setTelefoneAtendente('');
                 setCentroDeCustoId('');
                 setSetorId('');
+                setIsGestor(false);
+                setEditIndexAtendente(null);
               }}
             >
               Cancelar
@@ -204,6 +245,10 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
                 <Text fontWeight="bold">Setor:</Text>
                 <Text>{at.setor_nome}</Text>
               </HStack>
+              <HStack justifyContent="space-between">
+                <Text fontWeight="bold">É Gestor:</Text>
+                <Text>{at.is_gestor ? 'Sim' : 'Não'}</Text>
+              </HStack>
               <Button size="sm" onClick={() => handleEditAtendente(index)} mt={2}>Editar</Button>
             </Box>
           ))}
@@ -217,6 +262,7 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
               <Th>Telefone</Th>
               <Th>Centro de Custo</Th>
               <Th>Setor</Th>
+              <Th>É Gestor</Th>
               <Th>Ações</Th>
             </Tr>
           </Thead>
@@ -228,6 +274,7 @@ const AtendenteForm = ({ centrosDeCusto, setores, atendentes, fetchAtendentes })
                 <Td>{at.telefone}</Td>
                 <Td>{at.centro_de_custo_nome}</Td>
                 <Td>{at.setor_nome}</Td>
+                <Td>{at.is_gestor ? 'Sim' : 'Não'}</Td>
                 <Td>
                   <Button size="sm" onClick={() => handleEditAtendente(index)}>Editar</Button>
                 </Td>

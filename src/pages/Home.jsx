@@ -8,8 +8,8 @@ import Logo from '../assets/logo/logo_vertical.png';
 const Home = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [nome, setNome] = useState('');
-  const [tipo, setTipo] = useState('');
   const [email, setEmail] = useState('');
+  const [telefone, setTelefone] = useState('');
   const [senha, setSenha] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const Home = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post('/register.php', { nome, email, senha, tipo });
+      const response = await axios.post('/register.php', { nome, email, telefone, senha });
       if (response.data.success) {
         toast({
           title: 'Parabéns',
@@ -106,8 +106,8 @@ const Home = () => {
           <>
             <Text fontSize="2xl" mb={4}>Registrar</Text>
             <Input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} mb={2} />
-            <Input placeholder="Tipo" value={tipo} onChange={(e) => setTipo(e.target.value)} mb={2} />
             <Input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} mb={2} />
+            <Input placeholder="Telefone" value={telefone} onChange={(e) => setTelefone(e.target.value)} mb={2} />
             <InputGroup size="md" mb={4}>
               <Input
                 pr="4.5rem"

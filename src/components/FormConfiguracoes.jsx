@@ -11,16 +11,19 @@ import {
 import CentroDeCustoForm from './CentroDeCustoForm';
 import SetorForm from './SetorForm';
 import AtendenteForm from './AtendenteForm';
+import FormUsuarios from './FormUsuarios';
 
 const FormConfiguracoes = () => {
   const [centrosDeCusto, setCentrosDeCusto] = useState([]);
   const [setores, setSetores] = useState([]);
   const [atendentes, setAtendentes] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
 
   useEffect(() => {
     fetchCentrosDeCusto();
     fetchSetores();
     fetchAtendentes();
+    fetchUsuarios();
   }, []);
 
   const fetchCentrosDeCusto = async () => {
@@ -45,8 +48,18 @@ const FormConfiguracoes = () => {
     try {
       const response = await axios.get('https://chamados.nexustech.net.br/api_chamados/atendentes/read.php');
       setAtendentes(response.data);
+      console.log("Atendentes: ", response.data);
     } catch (error) {
       console.error('Erro ao buscar atendentes', error);
+    }
+  };
+
+  const fetchUsuarios = async () => {
+    try {
+      const response = await axios.get('https://chamados.nexustech.net.br/api_chamados/usuarios/read.php');
+      setUsuarios(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar usuários', error);
     }
   };
 
@@ -57,6 +70,7 @@ const FormConfiguracoes = () => {
           <Tab>Centro de Custo</Tab>
           <Tab>Setor</Tab>
           <Tab>Atendente</Tab>
+          <Tab>Usuários</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -76,10 +90,18 @@ const FormConfiguracoes = () => {
             <AtendenteForm
               centrosDeCusto={centrosDeCusto}
               setores={setores}
+              usuarios={usuarios}
               atendentes={atendentes}
               fetchAtendentes={fetchAtendentes}
             />
           </TabPanel>
+          <TabPanel>
+            <FormUsuarios
+              usuarios={usuarios}
+              fetchUsuarios={fetchUsuarios}
+            />
+          </TabPanel>
+         
         </TabPanels>
       </Tabs>
     </Box>

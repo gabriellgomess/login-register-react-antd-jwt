@@ -18,6 +18,7 @@ import {
   VStack,
   HStack,
   Text,
+  Flex
 } from '@chakra-ui/react';
 
 const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
@@ -79,23 +80,24 @@ const SetorForm = ({ centrosDeCusto, setores, fetchSetores }) => {
   return (
     <Box>
       <form onSubmit={handleSubmitSetor}>
-        <FormControl id="codigoSetor" isRequired>
-          <FormLabel>Código do Setor</FormLabel>
-          <Input
-            value={codigoSetor}
-            onChange={(e) => setCodigoSetor(e.target.value)}
-            placeholder="Código do Setor"
-          />
-        </FormControl>
-        <FormControl id="nomeSetor" isRequired mt={4}>
-          <FormLabel>Nome do Setor</FormLabel>
-          <Input
-            value={nomeSetor}
-            onChange={(e) => setNomeSetor(e.target.value)}
-            placeholder='Nome do Setor'
-          />
-        </FormControl>
-
+        <Flex justifyContent="space-between" gap="20px" flexDirection={isMobile?"column":"row"}>
+          <FormControl id="codigoSetor" isRequired width={isMobile?"100%":"20%"}>
+            <FormLabel>Código</FormLabel>
+            <Input
+              value={codigoSetor}
+              onChange={(e) => setCodigoSetor(e.target.value)}
+              placeholder="Código"
+            />
+          </FormControl>
+          <FormControl id="nomeSetor" isRequired width={isMobile?"100%":"80%"}>
+            <FormLabel>Nome do Setor</FormLabel>
+            <Input
+              value={nomeSetor}
+              onChange={(e) => setNomeSetor(e.target.value)}
+              placeholder='Nome do Setor'
+            />
+          </FormControl>
+        </Flex>
         <FormControl id="descricaoSetor" isRequired mt={4}>
           <FormLabel>Descrição do Setor</FormLabel>
           <Input
