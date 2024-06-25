@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Input, InputGroup, InputRightElement, useToast, Box, Text } from '@chakra-ui/react';
+import  { useState } from 'react';
+import { Button, Input, InputGroup, useToast, Box, Text, useBreakpointValue } from '@chakra-ui/react';
 import { useAuth } from '../auth';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -18,6 +18,8 @@ const Home = () => {
   // Defina a URL base do axios
   axios.defaults.baseURL = `${import.meta.env.VITE_URL}/auth`;
   axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handleLogin = async () => {
     try {
@@ -79,9 +81,8 @@ const Home = () => {
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-      <img width={400} src={Logo} alt="" />
-      
+    <Box display="flex" justifyContent="center" alignItems="center" height="100vh" flexDirection={isMobile?'column':'row'}>
+      <img width={400} src={Logo} alt="" />      
       <Box width={400} p={4} borderWidth={1} borderRadius="md" boxShadow="lg">        
         {isLogin ? (
           <>
